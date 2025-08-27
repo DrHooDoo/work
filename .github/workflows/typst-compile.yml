@@ -1,0 +1,30 @@
+name: Compile Typst Document
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Compile Typst document
+      uses: 'typst-actions/typst-action@main'
+      with:
+        typst_version: '0.11.0'
+        input_file: 'main.typ'
+        output_format: 'pdf'
+
+    - name: Upload PDF artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mon_document_pdf
+        path: mon_document.pdf
