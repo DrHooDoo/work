@@ -1,4 +1,4 @@
-name: Compile Typst Document
+name: Compile Typst Documents
 
 on:
   push:
@@ -16,15 +16,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Compile Typst document
-      uses: 'typst-actions/typst-action@main'
-      with:
-        typst_version: '0.11.0'
-        input_file: 'main.typ'
-        output_format: 'pdf'
+    - name: Download and install Typst
+      run: |
+        TYPST_VERSION="0.11.0"
+        wget https://github.com/typst/typst/releases/download/v$TYPST_VERSION/typst-x86_64-unknown-linux-musl.tar.xz
+        tar -xf typst-x86_64-unknown-linux-musl.tar.xz
+        sudo mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/
 
-    - name: Upload PDF artifact
+    - name: Compile all Typst files
+      run: |
+        find . -name "*.typ" -exec typst compile {} \;
+
+    - name: Upload compiled PDFs
       uses: actions/upload-artifact@v4
       with:
-        name: mon_document_pdf
-        path: mon_document.pdf
+        name: compiled-pdfs
+        path: |
+          **/*.pdf
